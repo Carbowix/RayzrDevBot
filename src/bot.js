@@ -20,7 +20,7 @@ const read = require('fs-readdir-recursive');
 
 const bot = new Discord.Client();
 const commands = bot.commands = {};
-
+let token = process.env.TOKEN
 const levels = bot.levels = new (require('./managers/levels'))();
 
 let invite_template = 'https://discordapp.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&scope=bot&permissions=268443648';
@@ -88,22 +88,15 @@ bot.on('ready', () => {
     console.log('Loading commands...');
     var loadTime = time(loadCommands);
     console.log(`Commands loaded in ${loadTime}ms.`);
+    
+    bot.user.setGame(`hmm`);
 
-    bot.user.setAvatar(path.resolve(__dirname, '../avatar.png'));
-    bot.user.setGame(`${config.prefix}help`);
-
-    updateTopics();
     bot.setInterval(updateTopics, 15000);
 
     console.log('Bot has loaded successfully. We\'re in business!');
 
     console.log(`Use the following link to invite ${config.name} to your server:\n` + chalk.blue(invite_template.replace('YOUR_CLIENT_ID', bot.user.id)));
 });
-
-function updateTopics() {
-    bot.guilds.forEach(g => {
-        g.defaultChannel.setTopic(`Members: ${g.memberCount} | Online: ${g.members.filter(m => m.presence.status !== 'offline').size}`);
-    });
 }
 
 bot.on('message', (msg) => {
@@ -164,6 +157,6 @@ bot.on('messageUpdate', (oldMsg, newMsg) => {
     logMessageStatus(oldMsg, 'Edited', [250, 215, 30], `${oldMsg.cleanContent}\n\`\`\` \`\`\`\n${newMsg.cleanContent}`);
 });
 
-bot.login(config.token);
+bot.login(token);
 
 module.exports = bot;
